@@ -1,0 +1,12 @@
+﻿@model SiteInfo
+@{
+    ViewData["Title"] = "About project";
+}
+
+<div class="text-center">
+    <h1 class="display-4">MVC example project</h1>
+
+    <h2>@Model.SiteName</h2>
+    <p>@Model.Description</p>
+    <p>@ViewData["Message"]</p>
+</div>
