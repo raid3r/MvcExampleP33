@@ -1,0 +1,35 @@
+﻿@model List<Category>
+@{
+    ViewData["Title"] = "Категорії";
+    // Список категорій (таблиця) та кнопка для створення нової категорії
+    // В таблиці кнопки для редагування та видалення категорій
+    // Колонки: ІД, Назва, Дії (кнопки Редагувати, Видалити)
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<a class="btn btn-primary mb-3" asp-action="Create">Створити нову категорію</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ІД</th>
+            <th>Назва</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Id</td>
+                <td>@category.Title</td>
+                <td>
+                    <a class="btn btn-sm btn-secondary" asp-action="Edit" asp-route-id="@category.Id">Редагувати</a>
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@category.Id">Видалити</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
