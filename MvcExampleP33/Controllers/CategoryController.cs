@@ -16,7 +16,9 @@ public class CategoryController(StoreContext context, FileStorageService fileSto
     /// <returns></returns>
     public async Task<IActionResult> Index()
     {
-        return View(await context.Categories.ToListAsync());
+        return View(await context.Categories
+            .Include(c => c.Image)
+            .ToListAsync());
     }
 
     /// <summary>

@@ -6,4 +6,6 @@ public class ImageFile
     public string FileName { get; set; }
 
     public virtual ICollection<Product> Products { get; set; } = [];
+
+    public string Src { get => "/uploads/images/" + FileName[0] + "/" + FileName[1] + "/" + FileName; }
 }
