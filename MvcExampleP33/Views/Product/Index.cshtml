@@ -1,0 +1,49 @@
+﻿@model List<Product>
+@{
+}
+
+<h1>Продукти</h1>
+<a class="btn btn-primary mb-3"
+   asp-controller="Product"
+   asp-action="Create">
+    Створити новий продукт
+</a>
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ІД</th>
+            <th>Назва</th>
+            <th>Ціна</th>
+            <th>Категорія</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.Title</td>
+                <td>@product.Price</td>
+                <td>@product.Category?.Title</td>
+                <td>
+                    <a class="btn btn-sm btn-secondary"
+                       asp-controller="Product"
+                       asp-action="Edit"
+                       asp-route-id="@product.Id">
+                        Редагувати
+                    </a>
+
+                    <a class="btn btn-sm btn-danger"
+                       asp-controller="Product"
+                       asp-action="Delete"
+                       asp-route-id="@product.Id">
+                        Видалити
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

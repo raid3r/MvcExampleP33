@@ -43,13 +43,15 @@ app.UseAuthorization();
  * 
  * 
  */
+// /
 //   /Home/Index
 //  GET /Person/Edit/5 
 //  Person        Edit          5 
 //  {controller}  {action}     {id?}
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();
 

@@ -4,6 +4,8 @@ using MvcExampleP33.Models;
 
 namespace MvcExampleP33.Controllers;
 
+// /Category/Index
+
 public class CategoryController(StoreContext context) : Controller
 {
     /// <summary>
