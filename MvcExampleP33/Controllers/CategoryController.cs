@@ -47,6 +47,17 @@ public class CategoryController(StoreContext context, FileStorageService fileSto
             Title = form.Title
         };
 
+        // add image if exists
+        if (form.Image != null)
+        {
+            var savedFileName = await fileStorageService.SaveFileAsync(form.Image);
+            var imageFile = new ImageFile
+            {
+                FileName = savedFileName,
+            };
+            category.Image = imageFile;
+        }
+
         context.Add(category);
         await context.SaveChangesAsync();
         return RedirectToAction("Index");
