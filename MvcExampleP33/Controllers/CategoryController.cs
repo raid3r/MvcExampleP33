@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP33.Models;
+using MvcExampleP33.Models.Forms;
+using MvcExampleP33.Services;
 
 namespace MvcExampleP33.Controllers;
 
 // /Category/Index
 
-public class CategoryController(StoreContext context) : Controller
+public class CategoryController(StoreContext context, FileStorageService fileStorageService) : Controller
 {
     /// <summary>
     /// Список категорій
@@ -24,7 +26,7 @@ public class CategoryController(StoreContext context) : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        return View(new Category());
+        return View(new CategoryForm());
     }
 
     /// <summary>
@@ -33,12 +35,17 @@ public class CategoryController(StoreContext context) : Controller
     /// <param name="category"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Create([FromForm]Category category)
+    public async Task<IActionResult> Create([FromForm] CategoryForm form)
     {
         if (!ModelState.IsValid)
         {
-            return View(category);
+            return View(form);
         }
+
+        var category = new Category
+        {
+            Title = form.Title
+        };
 
         context.Add(category);
         await context.SaveChangesAsync();
@@ -54,7 +61,11 @@ public class CategoryController(StoreContext context) : Controller
     public async Task<IActionResult> Edit(int id)
     {
         var category = await context.Categories.FirstAsync(x => x.Id == id);
-        return View(category);
+        return View(new CategoryForm
+        {
+            Title = category.Title
+        }
+        );
     }
 
     /// <summary>
@@ -63,14 +74,14 @@ public class CategoryController(StoreContext context) : Controller
     /// <param name="form"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Edit(int id, [FromForm]Category form)
+    public async Task<IActionResult> Edit(int id, [FromForm] CategoryForm form)
     {
         if (!ModelState.IsValid)
         {
             return View(form);
         }
 
-        var category =  await context.Categories.FirstAsync(x => x.Id == id);
+        var category = await context.Categories.FirstAsync(x => x.Id == id);
         category.Title = form.Title;
 
         await context.SaveChangesAsync();
