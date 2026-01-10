@@ -92,8 +92,28 @@ public class CategoryController(StoreContext context, FileStorageService fileSto
             return View(form);
         }
 
-        var category = await context.Categories.FirstAsync(x => x.Id == id);
+        var category = await context.Categories
+            .Include(c => c.Image)
+            .FirstAsync(x => x.Id == id);
+
         category.Title = form.Title;
+
+        if (form.Image != null)
+        {
+            // delete old image if exists
+            if (category.Image != null)
+            {
+                fileStorageService.DeleteFile(category.Image.FileName);
+                context.Remove(category.Image);
+            }
+            var savedFileName = await fileStorageService.SaveFileAsync(form.Image);
+            var imageFile = new ImageFile
+            {
+                FileName = savedFileName,
+            };
+            category.Image = imageFile;
+        }
+
 
         await context.SaveChangesAsync();
         return RedirectToAction("Index");
@@ -107,7 +127,16 @@ public class CategoryController(StoreContext context, FileStorageService fileSto
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var category = await context.Categories.FirstAsync(x => x.Id == id);
+        var category = await context.Categories
+            .Include(c => c.Image)
+            .FirstAsync(x => x.Id == id);
+
+        if (category.Image != null)
+        {
+            fileStorageService.DeleteFile(category.Image.FileName);
+            context.Remove(category.Image);
+        }
+
         context.Remove(category);
         await context.SaveChangesAsync();
         return RedirectToAction("Index");
