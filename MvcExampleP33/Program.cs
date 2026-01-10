@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP33.Models;
+using MvcExampleP33.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<FileStorageService>();
 
 builder.Services.AddDbContext<StoreContext>(options =>
 {
