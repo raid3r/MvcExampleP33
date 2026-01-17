@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP33.Models;
 using MvcExampleP33.Models.Forms;
 
 namespace MvcExampleP33.Controllers;
 
+[Authorize]
 public class ProductController(StoreContext context) : Controller
 {
     // /Product/Index
+    
     public async Task<IActionResult> Index() 
     {
         var list = await context

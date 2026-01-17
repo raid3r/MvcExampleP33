@@ -13,8 +13,8 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th></th>
             <th>ІД</th>
+            <th></th>
             <th>Назва</th>
             <th>Дії</th>
         </tr>
@@ -23,13 +23,13 @@
         @foreach (var category in Model)
         {
             <tr>
+                <td>@category.Id</td>
                 <td>
                     @if (category.Image != null)
                     {
                         <img src="@category.Image.Src" style="width: 50px" />
                     }
                 </td>
-                <td>@category.Id</td>
                 <td>@category.Title</td>
                 <td>
                     <a class="btn btn-sm btn-secondary" asp-action="Edit" asp-route-id="@category.Id">Редагувати</a>

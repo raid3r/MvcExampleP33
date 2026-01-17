@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP33.Models;
 using MvcExampleP33.Services;
@@ -12,6 +13,35 @@ builder.Services.AddScoped<FileStorageService>();
 builder.Services.AddDbContext<StoreContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
+{
+    //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    //options.Lockout.MaxFailedAccessAttempts = 5;
+    //options.Lockout.AllowedForNewUsers = true;
+   
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedAccount = false;
+
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredUniqueChars = 0;
+    options.Password.RequiredLength = 3;
+})
+    .AddRoles<IdentityRole<int>>()
+    .AddEntityFrameworkStores<StoreContext>()
+    .AddDefaultTokenProviders();
+
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = new PathString("/Account/Login");
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
 
@@ -30,7 +60,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseAuthentication(); /// шукає користувача (в даних запиту - кукіс)
+app.UseAuthorization(); // перевіряє чи має користувач доступ до ресурсу
 
 /*
  * Razor Pages
@@ -65,3 +96,11 @@ app.Run();
  * Створити контролер для керування продуктами
  * Новоствореному продукту присвоювати першу категорію зі списку
  */
+
+
+
+
+/*
+ * Додати можливість завантаження зображення для категорії
+ * Додати можливість завантаження зображення для продукту (декілька зображень)
+ */ 

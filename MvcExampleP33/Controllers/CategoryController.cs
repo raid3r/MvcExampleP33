@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP33.Models;
 using MvcExampleP33.Models.Forms;
@@ -8,6 +9,7 @@ namespace MvcExampleP33.Controllers;
 
 // /Category/Index
 
+[Authorize]
 public class CategoryController(StoreContext context, FileStorageService fileStorageService) : Controller
 {
     /// <summary>
