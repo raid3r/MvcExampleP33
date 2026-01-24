@@ -1,0 +1,63 @@
+﻿@model IEnumerable<UserDto>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Користувачі";
+}
+
+<h1 class="text-center mb-4">Список користувачів</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ІД</th>
+            <th>Email</th>
+            <th>Ролі</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Email</td>
+                <td>
+                    
+                    @foreach (var role in user.Roles)
+                    {
+                        @if (role == RoleConstants.Admin)
+                        {
+                            <span class="badge bg-danger">Admin</span>
+                        }
+                        @if (role == RoleConstants.User)
+                        {
+                            <span class="badge bg-primary">User</span>
+                        }
+                        @if (role == RoleConstants.Manager)
+                        {
+                            <span class="badge bg-success">Manager</span>
+                        }
+                    }
+
+                </td>
+                <td>
+                    @* <a class="btn btn-sm btn-secondary"
+                       asp-controller="Product"
+                       asp-action="Edit"
+                       asp-route-id="@user.Id">
+                        Редагувати
+                    </a>
+
+                    <a class="btn btn-sm btn-danger"
+                       asp-controller="Product"
+                       asp-action="Delete"
+                       asp-route-id="@user.Id">
+                        Видалити
+                    </a> *@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

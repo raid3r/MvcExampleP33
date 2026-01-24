@@ -6,7 +6,8 @@ using MvcExampleP33.Models.Forms;
 
 namespace MvcExampleP33.Controllers;
 
-[Authorize]
+[Authorize(Roles=RoleConstants.Admin)]
+[Authorize(Roles=RoleConstants.Manager)]
 public class ProductController(StoreContext context) : Controller
 {
     // /Product/Index

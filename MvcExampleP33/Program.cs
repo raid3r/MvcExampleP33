@@ -47,6 +47,20 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
+// Ініціалізація ролей
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    
+    foreach (var role in RoleConstants.AllRoles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+        }
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -103,4 +117,4 @@ app.Run();
 /*
  * Додати можливість завантаження зображення для категорії
  * Додати можливість завантаження зображення для продукту (декілька зображень)
- */ 
+ */

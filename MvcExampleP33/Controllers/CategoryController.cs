@@ -9,7 +9,8 @@ namespace MvcExampleP33.Controllers;
 
 // /Category/Index
 
-[Authorize]
+[Authorize(Roles = RoleConstants.Admin)]
+[Authorize(Roles = RoleConstants.Manager)]
 public class CategoryController(StoreContext context, FileStorageService fileStorageService) : Controller
 {
     /// <summary>

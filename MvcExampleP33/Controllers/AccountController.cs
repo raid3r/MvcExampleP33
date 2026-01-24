@@ -24,12 +24,6 @@ public class AccountController(UserManager<User> userManager) : Controller
             return View(form);
         }
 
-        if (form.Password != form.ConfirmPassword)
-        {
-            ModelState.AddModelError(nameof(LoginForm.ConfirmPassword), "Passwords do not match");
-            return View(form);
-        }
-
         var user = await userManager.FindByEmailAsync(form.Login);
         if (user is null)
         {
@@ -103,7 +97,20 @@ public class AccountController(UserManager<User> userManager) : Controller
             return View(form);
         }
         
+        await userManager.AddToRoleAsync(user, RoleConstants.User);
+
         await SignInUserAsync(user);
+        return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<IActionResult> AccessDenied()
+    {
+        return View();
+    }
+
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
         return RedirectToAction("Index", "Home");
     }
 }
