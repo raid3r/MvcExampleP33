@@ -1,0 +1,85 @@
+﻿@model UserDto
+@{
+    ViewData["Title"] = "Профіль користувача: " + Model.Email;
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Інформація про користувача</h5>
+                <p class="card-text"><strong>ІД:</strong> @Model.Id</p>
+                <p class="card-text"><strong>Email:</strong> @Model.Email</p>
+                <p class="card-text">
+                    <strong>Ролі:</strong>
+                    @foreach (var role in Model.Roles)
+                    {
+                        await Html.RenderPartialAsync("Components/RoleBadge", role);
+                    }
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6" id="reset-password-content">
+
+        <button class="btn btn-danger show-reset-password-form">Reset Password</button>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+
+        
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const resetPasswordContent = document.getElementById("reset-password-content");
+
+            async function setupFormEvents(htmlForm) {
+                    resetPasswordContent.innerHTML = htmlForm;
+
+                    document.getElementById("change-password-form")
+                    .addEventListener("submit", function(event) {
+                        event.preventDefault();
+                        const formData = new FormData(this);
+                        const data = {
+                            password: formData.get("Password"),
+                            confirmPassword: formData.get("ConfirmPassword")
+                        };
+                        fetch(`/Profile/ChangePassword`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data)
+                        })
+                        .then(async response => {
+                            let content = await response.text();
+                            if (response.status === 400) {
+                                setupFormEvents(content);
+                                return;
+                            }
+                            resetPasswordContent.innerHTML = content;
+                        })
+                    });
+        }
+
+            document.querySelector(".show-reset-password-form")
+            .addEventListener("click", function() {
+                fetch(`/Profile/ResetPasswordForm`)
+                .then(response => response.text())
+                .then(setupFormEvents);
+            })
+            
+        });
+    </script>
+}
+

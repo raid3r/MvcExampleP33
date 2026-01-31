@@ -1,0 +1,88 @@
+﻿@model IEnumerable<string>
+@{
+    var user = ViewData["User"] as MvcExampleP33.Models.User;
+    var allRoles = ViewData["AllRoles"] as List<string>;
+
+    ViewData["Title"] = "Редагування ролей користувача";
+}
+
+
+<h1 class="mb-4">Редагування ролей користувача: @user.Email</h1>
+
+<table 
+    data-user-id="@user.Id"
+    class="table table-bordered" style="max-width: 400px;">
+    <thead>
+        <tr>
+            <th>Роль</th>
+            <th>Призначено</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in allRoles)
+        {
+            var isChecked = Model.Contains(role);
+            <tr data-role="@role">
+                <td>@role</td>
+                <td>
+                    <input 
+                        class="role-selected"
+                        type="checkbox" @(isChecked ? "checked" : "") />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="User" asp-action="Index"
+   class="btn btn-info">До списку</a>
+
+
+@section Scripts {
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            const table = document.querySelector("table");
+            const userId = table.getAttribute("data-user-id");
+
+            table.querySelectorAll(".role-selected").forEach(function (checkbox) {
+                checkbox.addEventListener("change", function () {
+                    const row = this.closest("tr");
+                    const role = row.getAttribute("data-role");
+                    const isSelected = this.checked;
+
+                    fetch(`/User/UpdateRole`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            //"RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({
+                            userId: parseInt(userId),
+                            role: role,
+                            isSelected: isSelected
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        //return response.json();
+                    })
+                    .then(data => {
+                        console.log("Role updated successfully:", data);
+                    })
+                    .catch(error => {
+                        console.error("Error updating role:", error);
+                        // Optionally revert the checkbox state on error
+                        this.checked = !isSelected;
+                    });
+                });
+            });
+        });
+
+    </script>
+
+}

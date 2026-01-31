@@ -59,19 +59,8 @@
                                         </li>
                                         */
                                     }
-                                    <li class="px-1">
-                                        @if (User.IsInRole(RoleConstants.Admin))
-                                        {
-                                            <span class="badge bg-danger">Admin</span>
-                                        }
-                                        @if (User.IsInRole(RoleConstants.User))
-                                        {
-                                            <span class="badge bg-primary">User</span>
-                                        }
-                                        @if (User.IsInRole(RoleConstants.Manager))
-                                        {
-                                            <span class="badge bg-success">Manager</span>
-                                        }
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Profile" asp-action="Index">Profile</a>
                                     </li>
                                     @if (User.IsInRole(RoleConstants.Admin))
                                     {

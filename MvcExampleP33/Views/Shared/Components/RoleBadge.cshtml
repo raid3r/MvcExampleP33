@@ -1,0 +1,14 @@
+﻿@model string
+
+@if (Model == RoleConstants.Admin)
+{
+    <span class="badge bg-danger">Admin</span>
+}
+@if (Model == RoleConstants.User)
+{
+    <span class="badge bg-primary">User</span>
+}
+@if (Model == RoleConstants.Manager)
+{
+    <span class="badge bg-success">Manager</span>
+}
