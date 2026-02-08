@@ -12,6 +12,7 @@
             <div class="card-body">
                 <h5 class="card-title">Інформація про користувача</h5>
                 <p class="card-text"><strong>ІД:</strong> @Model.Id</p>
+                <p class="card-text"><strong>Ім'я:</strong> @Model.FullName</p>
                 <p class="card-text"><strong>Email:</strong> @Model.Email</p>
                 <p class="card-text">
                     <strong>Ролі:</strong>
@@ -22,6 +23,31 @@
                 </p>
             </div>
         </div>
+
+        <div class="card mt-1">
+            <div class="card-body">
+                <input type="text" class="form-control" name="FullName" value="@Model.FullName" />
+
+                <div class="full-name-change-message"></div>
+            </div>
+        </div>
+
+        <div class="card mt-1">
+            <div class="card-body">
+                @if (Model.AvatarSrc != null)
+                {
+                    <img src="@Model.AvatarSrc" alt="avatar" class="rounded-circle" width="100" height="100" />
+                }
+
+                <input type="file"
+                       accept=".jpg,.jpeg,.png"
+                       class="form-control mt-2" name="Avatar" />
+                <button class="btn btn-primary mt-2 change-avatar d-none">Update avatar</button>
+                <div class="new-avatar-preview"></div>
+                <div class="avatar-change-message"></div>
+            </div>
+        </div>
+
 
     </div>
 
@@ -35,9 +61,108 @@
 
 
 @section Scripts {
+
     <script>
 
-        
+         /*
+         Якщо завантажити в поле <input type="file" class="form-control mt-2" name="Avatar" /> зображення, то під полем з'являється прев'ю цього зображення
+         Якщо натиснути кнопку "Update avatar", то відправляється запит на зміну аватару. Якщо відповідь успішна, то виводиться повідомлення про успіх, якщо ні - про помилку
+         Запит на  [HttpPost] public async Task<JsonResult> UploadAvatar(IFormFile avatar)
+         Якщо успішно змінило, превью зникає, якщо ні - залишається. Повідомлення зникає через 3 секунди
+         Сторінка перевантажується
+         */
+        document.querySelector("input[name='Avatar']").addEventListener("change", function() {
+             const file = this.files[0];
+             if (!file) return;
+             const reader = new FileReader();
+             reader.onload = function(e) {
+                 const previewContainer = document.querySelector(".new-avatar-preview");
+                 previewContainer.innerHTML = `<img src="${e.target.result}" alt="avatar preview" class="rounded-circle" width="100" height="100" />`;
+                 document.querySelector(".change-avatar").classList.remove("d-none");
+             }
+              reader.readAsDataURL(file);
+        });
+
+        document.querySelector(".change-avatar").addEventListener("click", function() {
+
+            const fileInput = document.querySelector("input[name='Avatar']");
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append("avatar", file);
+
+            fetch(`/Profile/UploadAvatar`, {
+                method: "POST",
+                body: formData
+            })
+            .then(async response => {
+                const messageElement = document.querySelector(".avatar-change-message");
+
+                if (response.ok) {
+                    messageElement.textContent = "Avatar changed successfully";
+                    messageElement.classList.remove("text-danger");
+                    messageElement.classList.add("text-success");
+                    document.querySelector(".new-avatar-preview").innerHTML = "";
+
+                    setTimeout(() => {
+                        messageElement.textContent = "";
+                        window.location.reload();
+                    }, 3000);
+
+                } else {
+
+                    messageElement.textContent = "Error changing avatar";
+                    messageElement.classList.remove("text-success");
+                    messageElement.classList.add("text-danger");
+
+                    setTimeout(() => {
+                        messageElement.textContent = "";
+                    }, 3000);
+                }
+             })
+        })
+
+    </script>
+
+    <script>
+        // Якщо поміняти значення в <input type="text" class="form-control" name="FullName" value="@Model.FullName" />
+        // то при втрачанні фокусу іде запит на зміну імені користувача. Якщо відповідь успішна, то виводиться повідомлення про успіх, якщо ні - про помилку
+        // Повідомлення зникає через 3 секунди
+
+        document.querySelector("input[name='FullName']").addEventListener("blur", async function () {
+
+            const fullName = this.value;
+            const response = await fetch(`/Profile/UpdateFullName`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(fullName)
+            });
+            const messageElement = document.querySelector(".full-name-change-message");
+            if (response.ok) {
+                messageElement.textContent = "Full name changed successfully";
+                messageElement.classList.remove("text-danger");
+                messageElement.classList.add("text-success");
+            } else {
+                messageElement.textContent = "Error changing full name";
+                messageElement.classList.remove("text-success");
+                messageElement.classList.add("text-danger");
+            }
+            setTimeout(() => {
+                messageElement.textContent = "";
+                window.location.reload()
+            }, 3000);
+
+        })
+
+
+    </script>
+
+    <script>
+
+
 
         document.addEventListener("DOMContentLoaded", function () {
 
@@ -78,7 +203,7 @@
                 .then(response => response.text())
                 .then(setupFormEvents);
             })
-            
+
         });
     </script>
 }

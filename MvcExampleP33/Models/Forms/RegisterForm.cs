@@ -5,6 +5,9 @@ namespace MvcExampleP33.Models.Forms;
 public class RegisterForm
 {
     [Required]
+    [Display(Name = "Full Name")]
+    public string FullName { get; set; }
+    [Required]
     [Display(Name = "Email")]
     public string Login { get; set; }
     [Required]

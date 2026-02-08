@@ -59,6 +59,17 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole<int>(role));
         }
     }
+
+    // if production, use migrations
+    if (app.Environment.IsProduction())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<StoreContext>();
+        // Ініціалізація бази даних (створення таблиць, якщо вони не існують)
+        await context.Database.MigrateAsync();
+        // або
+        // Створення бази даних, якщо вона не існує (без застосування міграцій)
+        // await context.Database.EnsureCreatedAsync();
+    }
 }
 
 // Configure the HTTP request pipeline.

@@ -37,7 +37,7 @@ public class AccountController(UserManager<User> userManager) : Controller
             ModelState.AddModelError(nameof(LoginForm.Password), "Invalid login or password");
             return View(form);
         }
-        
+
         await SignInUserAsync(user);
 
         return RedirectToAction("Index", "Home");
@@ -49,6 +49,15 @@ public class AccountController(UserManager<User> userManager) : Controller
         var identity = new ClaimsIdentity(IdentityConstants.ApplicationScheme);
         identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
         identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
+        if (!string.IsNullOrEmpty(user.FullName))
+        {
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.FullName));
+        }
+
+        if (user.Avatar != null)
+        {
+            identity.AddClaim(new Claim("avatar_src", user.Avatar.Src));
+        }
 
         var userRoles = await userManager.GetRolesAsync(user);
         foreach (var role in userRoles)
@@ -56,9 +65,18 @@ public class AccountController(UserManager<User> userManager) : Controller
             identity.AddClaim(new Claim(ClaimTypes.Role, role));
         }
 
-
         var principal = new ClaimsPrincipal(identity);
-        await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
+
+
+        await HttpContext.SignInAsync(
+            scheme: IdentityConstants.ApplicationScheme,
+            principal: principal,
+            properties: new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+            }
+            );
     }
 
 
@@ -86,17 +104,18 @@ public class AccountController(UserManager<User> userManager) : Controller
         // Create new user
         var user = new User
         {
+            FullName = form.FullName,
             UserName = form.Login,
             Email = form.Login,
         };
         var result = await userManager.CreateAsync(user, form.Password);
-        
+
         if (!result.Succeeded)
         {
             ModelState.AddModelError(nameof(RegisterForm.Password), result.Errors.First().Description);
             return View(form);
         }
-        
+
         await userManager.AddToRoleAsync(user, RoleConstants.User);
 
         await SignInUserAsync(user);
