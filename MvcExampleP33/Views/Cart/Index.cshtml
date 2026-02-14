@@ -1,0 +1,45 @@
+﻿@model OrderDto
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<h1 class="text-center mb-4">Ваш кошик</h1>
+<div class="row">
+    <div class="col-md-6">
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Назва товару</th>
+                    <th>Ціна</th>
+                    <th>Кількість</th>
+                    <th>Сума</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.ProductTitle</td>
+                        <td>@item.UnitPrice</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.TotalPrice</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Загальна сума:</strong></td>
+                    <td><strong>@Model.TotalPrice</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a asp-controller="Cart" 
+        asp-action="Checkout" 
+        asp-route-id="@Model.Id" class="btn btn-primary">Оформити замовлення</a>
+
+    </div>
+</div>
+

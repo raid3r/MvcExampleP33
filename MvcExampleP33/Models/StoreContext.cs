@@ -17,6 +17,8 @@ public class StoreContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<ImageFile> Images { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
 
     // Метод для налаштування моделі та конфігурації бази даних
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,6 +35,10 @@ public class StoreContext : IdentityDbContext<User, IdentityRole<int>, int>
 
         modelBuilder.Entity<Product>()
             .Property(p => p.Price)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.UnitPrice)
             .HasPrecision(18, 2);
     }
 }

@@ -1,0 +1,89 @@
+﻿@using MvcExampleP34.Models.LiqPay
+@model OrderDto
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    LiqPayCheckoutFormModel checkout = ViewData["LiqPayCheckout"] as LiqPayCheckoutFormModel;
+}
+
+<h1 class="text-center mb-4">Оплата</h1>
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Назва товару</th>
+                    <th>Ціна</th>
+                    <th>Кількість</th>
+                    <th>Сума</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.ProductTitle</td>
+                        <td>@item.UnitPrice</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.TotalPrice</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Загальна сума:</strong></td>
+                    <td><strong>@Model.TotalPrice</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-md-6">
+        <div id="liqpay_checkout"></div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        window.LiqPayCheckoutCallback = function() {
+        LiqPayCheckout.init(
+            {
+                data: '@Html.Raw(checkout.Data)',
+                signature: '@Html.Raw(checkout.Signature)',
+                embedTo: "#liqpay_checkout",
+                language: "uk",
+                mode: "embed" // embed || popup
+               }
+        ).on("liqpay.callback", function(data){
+
+            fetch("@Url.Action("LiqPayCallback", "Cart")", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data)
+            }).then(response => {
+                if (response.ok) {
+                    // Successfully sent callback data to the server
+                    console.log("LiqPay callback data sent successfully.");
+                } else {
+                    // Handle error response
+                    console.error("Error sending LiqPay callback data.");
+                }
+            }).catch(error => {
+                console.error("Network error:", error);
+            });
+
+            console.log(data.status);
+            console.log(data);
+        }).on("liqpay.ready", function(data){
+        // ready
+        }).on("liqpay.close", function(data){
+        // close
+        });
+        };
+    </script>
+
+    <script src="//static.liqpay.ua/libjs/checkout.js" async></script>
+}
